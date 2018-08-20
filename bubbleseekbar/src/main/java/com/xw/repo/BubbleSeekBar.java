@@ -128,6 +128,7 @@ public class BubbleSeekBar extends View {
     private boolean isTouchToSeekAnimEnd = true;
     private float mPreSecValue; // previous SectionValue
     private BubbleConfigBuilder mConfigBuilder; // config attributes
+    private String bubble_format;
 
     public BubbleSeekBar(Context context) {
         this(context, null);
@@ -191,6 +192,7 @@ public class BubbleSeekBar extends View {
         mAlwaysShowBubbleDelay = duration < 0 ? 0 : duration;
         isHideBubble = a.getBoolean(R.styleable.BubbleSeekBar_bsb_hide_bubble, false);
         isRtl = a.getBoolean(R.styleable.BubbleSeekBar_bsb_rtl, false);
+        bubble_format = a.getString(R.styleable.BubbleSeekBar_bsb_bubble_format);
         setEnabled(a.getBoolean(R.styleable.BubbleSeekBar_android_enabled, isEnabled()));
         a.recycle();
 
@@ -211,8 +213,7 @@ public class BubbleSeekBar extends View {
 
         // init BubbleView
         mBubbleView = new BubbleView(context);
-        mBubbleView.setProgressText(isShowProgressInFloat ?
-                String.valueOf(getProgressFloat()) : String.valueOf(getProgress()));
+        setProgressText();
 
         mLayoutParams = new WindowManager.LayoutParams();
         mLayoutParams.gravity = Gravity.START | Gravity.TOP;
@@ -760,8 +761,7 @@ public class BubbleSeekBar extends View {
                             mBubbleCenterRawX = calculateCenterRawXofBubbleView();
                             mLayoutParams.x = (int) (mBubbleCenterRawX + 0.5f);
                             mWindowManager.updateViewLayout(mBubbleView, mLayoutParams);
-                            mBubbleView.setProgressText(isShowProgressInFloat ?
-                                    String.valueOf(getProgressFloat()) : String.valueOf(getProgress()));
+                            setProgressText();
                         } else {
                             processProgress();
                         }
@@ -935,8 +935,7 @@ public class BubbleSeekBar extends View {
                         mBubbleCenterRawX = calculateCenterRawXofBubbleView();
                         mLayoutParams.x = (int) (mBubbleCenterRawX + 0.5f);
                         mWindowManager.updateViewLayout(mBubbleView, mLayoutParams);
-                        mBubbleView.setProgressText(isShowProgressInFloat ?
-                                String.valueOf(getProgressFloat()) : String.valueOf(getProgress()));
+                        setProgressText();
                     } else {
                         processProgress();
                     }
@@ -1019,8 +1018,7 @@ public class BubbleSeekBar extends View {
                         mWindowManager.addView(mBubbleView, mLayoutParams);
                     }
                 }).start();
-        mBubbleView.setProgressText(isShowProgressInFloat ?
-                String.valueOf(getProgressFloat()) : String.valueOf(getProgress()));
+        setProgressText();
     }
 
     /**
@@ -1332,8 +1330,7 @@ public class BubbleSeekBar extends View {
             super.onRestoreInstanceState(bundle.getParcelable("save_instance"));
 
             if (mBubbleView != null) {
-                mBubbleView.setProgressText(isShowProgressInFloat ?
-                        String.valueOf(getProgressFloat()) : String.valueOf(getProgress()));
+                setProgressText();
             }
             setProgress(mProgress);
 
@@ -1404,6 +1401,15 @@ public class BubbleSeekBar extends View {
          */
         @NonNull
         SparseArray<String> onCustomize(int sectionCount, @NonNull SparseArray<String> array);
+    }
+
+    public void setProgressText() {
+        Object progress = isShowProgressInFloat ? getProgressFloat() : getProgress();
+        if (bubble_format != null) {
+            mBubbleView.setProgressText(String.format(bubble_format, progress));
+        } else {
+            mBubbleView.setProgressText(String.valueOf(progress));
+        }
     }
 
     /***********************************************************************************************

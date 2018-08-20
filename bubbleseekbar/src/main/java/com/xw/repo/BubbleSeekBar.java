@@ -1404,11 +1404,14 @@ public class BubbleSeekBar extends View {
     }
 
     public void setProgressText() {
-        Object progress = isShowProgressInFloat ? getProgressFloat() : getProgress();
         if (bubble_format != null) {
-            mBubbleView.setProgressText(String.format(bubble_format, progress));
+            if (isShowProgressInFloat) {
+                mBubbleView.setProgressText(String.format(bubble_format, getProgressFloat()));
+            } else {
+                mBubbleView.setProgressText(String.format(bubble_format, getProgress()));
+            }
         } else {
-            mBubbleView.setProgressText(String.valueOf(progress));
+            mBubbleView.setProgressText(String.valueOf(isShowProgressInFloat ? getProgressFloat() : getProgress()));
         }
     }
 
